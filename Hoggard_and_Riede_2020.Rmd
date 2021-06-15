@@ -30,6 +30,7 @@ library(rnaturalearthdata)
 library(ggrepel)
 library(ggspatial)
 library(extrafont)
+library(patchwork)
 ```
 
 # Introduction (Text needs updating)
@@ -105,7 +106,7 @@ In understanding the underlying *chaînes opératoires*, and in adopting a commo
 All ordination methods in this analysis were conducted using the FactoMiner (Le et al. 2008), factoextra (Kassambara and Mundt, 2020) and the tidymodels packages (Kuhn et al. 2020), while diversity measures were calculated using the diverse (Guevara et al. 2016) and vegan (Oksanan et al. 2020) packages. A number of other packages were used to aid data wrangling, transformation and visualising, including rio (Chan et al. 2018), tidyverse (Wickham et al. 2019), gt (Iannone et al. 2020), broom (Robinson et al. 2020), tidytext (Silge and Robinson, 2016) and doBy (Højsgaard and Halekoh, 2020). All data, R code and supporting material (including figures) in this article can be found on the Open Science Framework (doi <https://osf.io/3h2rq/>)
 
 
-```{r data import, echo = FALSE, message = FALSE}
+```{r data import KEEP, echo = FALSE, message = FALSE}
 
 data <- import("https://raw.githubusercontent.com/CSHoggard/-tech-data/master/Hoggard_and_Riede_2020.csv", na.strings=c(""), setclass = "tbl_df", encoding = "UTF-8")
 
@@ -147,7 +148,7 @@ data[cols] <- lapply(data[cols], factor)
 
 ```
 
-```{r maps, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8, fig.align = "center"}
+```{r maps KEEP, echo=FALSE, message=FALSE, fig.width = 8, fig.height = 8, fig.align = "center"}
 
 world <- ne_countries(scale = "large", returnclass = "sf")
 
@@ -179,7 +180,7 @@ ggplot(data = world) +
 
 ```
 
-```{r overview, echo = FALSE, message = FALSE}
+```{r overview KEEP, echo = FALSE, message = FALSE}
 data %>% 
   rename(Context = CONTEXT) %>%
   group_by(ARTEFACT) %>%
@@ -198,7 +199,7 @@ data %>%
   opt_align_table_header(align = "left")
 ```
 
-```{r breakdown, echo = FALSE, message = FALSE}
+```{r breakdown KEEP, echo = FALSE, message = FALSE}
 data %>% 
   rename(Classification = CLASSIFICATION) %>%
   group_by(ARTEFACT) %>%
@@ -210,7 +211,7 @@ data %>%
 
 ```
 
-```{r file creation, echo = FALSE, message = FALSE}
+```{r file creation KEEP, echo = FALSE, message = FALSE}
 blade_data <- filter(data, ARTEFACT == "Blade") %>% droplevels()
 core_data <- filter(data, ARTEFACT == "Core") %>% droplevels()
 bp_data <- filter(data, ARTEFACT == "Backed Point") %>% droplevels()
@@ -305,7 +306,7 @@ The following additional attributes are recorded for all **tanged and backed poi
 
 ## Visual and Descriptive Summaries of Data
 
-```{r blade clean and display, echo = FALSE, message = FALSE}
+```{r blade clean and display KEEP, echo = FALSE, message = FALSE}
 
 blade_data_clean <- blade_data %>%
   filter(!DORS_BLADE_PROF == "BCB",
@@ -475,57 +476,67 @@ blade_data_clean %>%
 
 ```
 
-```{r blade summary 1, echo = FALSE, message = FALSE, fig.width = 6, fig.height = 4, fig.align = "center"}
-ggplot(blade_data_clean, aes(CODE, WEIGHT, fill = CLASSIFICATION)) +
-         geom_violin() +
+```{r blade summary 1 KEEP, echo = FALSE, message = FALSE, fig.width = 6, fig.height = 4, fig.align = "center"}
+a <- ggplot(blade_data_clean, aes(CODE, WEIGHT, fill = CLASSIFICATION)) +
+         geom_boxplot() +
          labs(x = "", y = "Weight (g)", fill = "Taxonomic Unit") +
   theme_minimal() +
   scale_fill_manual(values = c("#466995", "grey40", "grey80", "#56A3A6")) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-                                   legend.position = "bottom")
+  theme(text = element_text(family="IBM Plex Sans"),
+        axis.text.x = element_blank(),
+                                   legend.position = "none")
 
-ggplot(blade_data_clean, aes(CODE, LENGTH, fill = CLASSIFICATION)) +
-         geom_violin() +
+b <- ggplot(blade_data_clean, aes(CODE, LENGTH, fill = CLASSIFICATION)) +
+         geom_boxplot() +
          labs(x = "", y = "Length (mm)", fill = "Taxonomic Unit") +
   theme_minimal() +
   scale_fill_manual(values = c("#466995", "grey40", "grey80", "#56A3A6")) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-                                   legend.position = "bottom")
+  theme(text = element_text(family="IBM Plex Sans"),
+        axis.text.x = element_blank(),
+                                   legend.position = "none")
 
-ggplot(blade_data_clean, aes(CODE, WIDTH, fill = CLASSIFICATION)) +
-         geom_violin() +
+c <- ggplot(blade_data_clean, aes(CODE, WIDTH, fill = CLASSIFICATION)) +
+         geom_boxplot() +
          labs(x = "", y = "Width (mm)", fill = "Taxonomic Unit") +
   theme_minimal() +
   scale_fill_manual(values = c("#466995", "grey40", "grey80", "#56A3A6")) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-                                   legend.position = "bottom")
+  theme(text = element_text(family="IBM Plex Sans"),
+        axis.text.x = element_blank(),
+                                   legend.position = "none")
 
-ggplot(blade_data_clean, aes(CODE, ELONGATION, fill = CLASSIFICATION)) +
-         geom_violin() +
+d <- ggplot(blade_data_clean, aes(CODE, ELONGATION, fill = CLASSIFICATION)) +
+         geom_boxplot() +
          labs(x = "", y = "Elongation (L/W)", fill = "Taxonomic Unit") +
   theme_minimal() +
   scale_fill_manual(values = c("#466995", "grey40", "grey80", "#56A3A6")) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-                                   legend.position = "bottom")
+  theme(text = element_text(family="IBM Plex Sans"),
+        axis.text.x = element_blank(),
+                                   legend.position = "none")
 
-ggplot(blade_data_clean, aes(CODE, THICKNESS, fill = CLASSIFICATION)) +
-         geom_violin() +
+e <- ggplot(blade_data_clean, aes(CODE, THICKNESS, fill = CLASSIFICATION)) +
+         geom_boxplot() +
          labs(x = "", y = "Thickness (mm)", fill = "Taxonomic Unit") +
   theme_minimal() +
   scale_fill_manual(values = c("#466995", "grey40", "grey80", "#56A3A6")) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-                                   legend.position = "bottom")
+  theme(text = element_text(family="IBM Plex Sans"),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+                                   legend.position = "none")
 
-ggplot(blade_data_clean, aes(CODE, PLAT_DEPTH, fill = CLASSIFICATION)) +
-         geom_violin() +
+f <- ggplot(blade_data_clean, aes(CODE, PLAT_DEPTH, fill = CLASSIFICATION)) +
+         geom_boxplot() +
          labs(x = "", y = "Platform Depth (mm)", fill = "Taxonomic Unit") +
   theme_minimal() +
   scale_fill_manual(values = c("#466995", "grey40", "grey80", "#56A3A6")) + 
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-                                   legend.position = "bottom")
+  theme(text = element_text(family="IBM Plex Sans"),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+                                   legend.position = "none")
+
+(a | b) / (c | d) / (e | f)
+
+ggsave("Figure_2.png", dpi = 400, plot = last_plot())
 ```
 
-```{r blade l w plot, echo = FALSE, message = FALSE, fig.width = 6, fig.height = 6, fig.align = "center"}
+```{r blade l w plot KEEP, echo = FALSE, message = FALSE, fig.width = 6, fig.height = 6, fig.align = "center"}
 ggplot(blade_data_clean, aes(WIDTH, LENGTH, colour = CLASSIFICATION, shape = CLASSIFICATION)) +
          geom_point() +
          labs(x = "Blade Width (mm)", y = "Blade Length (mm)") +
@@ -548,7 +559,7 @@ ggplot(blade_data_clean, aes(WIDTH, LENGTH, colour = CODE, shape = CODE)) +
 
 ```
 
-```{r blade tests, echo = FALSE, message = FALSE, warning = FALSE}
+```{r blade tests KEEP, echo = FALSE, message = FALSE, warning = FALSE}
 
 pairwise.wilcox.test(blade_data_clean$WEIGHT, blade_data_clean$CODE, p.adj = "bonf", exact = FALSE)
 pairwise.wilcox.test(blade_data_clean$LENGTH, blade_data_clean$CODE, p.adj = "bonf", exact = FALSE)
@@ -566,157 +577,193 @@ pairwise.wilcox.test(blade_data_clean$PLAT_DEPTH, blade_data_clean$CLASSIFICATIO
 
 ```
 
-```{r blade summary 2, echo = FALSE, message = FALSE, fig.width = 6, fig.height = 4, fig.align = "center"}
+```{r blade summary 2 KEEP, echo = FALSE, message = FALSE, fig.width = 6, fig.height = 4, fig.align = "center"}
 
-ggplot(blade_data_clean, aes(fill = RAW_MAT, x = CODE)) +
+g <- ggplot(blade_data_clean, aes(fill = RAW_MAT, x = CODE)) +
   geom_bar(position = position_dodge(preserve = "single"), stat="count") +
   labs(title = "Raw Material", x = "", y = "Count", fill = "Type") +
   scale_fill_grey(start = 0.3, end = 0.9) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+  theme(text = element_text(family="IBM Plex Sans"),
+        axis.text.x = element_blank(),
         plot.title = element_text(hjust = 0.5, size = 18),
-        legend.position = "bottom")
+        legend.position = "top",
+        legend.title = element_blank())
 
-ggplot(blade_data_clean, aes(fill = DORS_BLADE_PROF, x = CODE)) +
+h <- ggplot(blade_data_clean, aes(fill = DORS_BLADE_PROF, x = CODE)) +
   geom_bar(position = position_dodge(preserve = "single"), stat="count") +
   labs(title = "Dorsal Blade Profile", x = "", y = "Count", fill = "Attribute") +
   scale_fill_grey(start = 0.3, end = 0.9) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+  theme(text = element_text(family="IBM Plex Sans"),
+        axis.text.x = element_blank(),
         plot.title = element_text(hjust = 0.5, size = 18),
-        legend.position = "bottom")
+        legend.position = "top",
+        legend.title = element_blank())
 
-ggplot(blade_data_clean, aes(fill = BLADE_DET, x = CODE)) +
+i <- ggplot(blade_data_clean, aes(fill = BLADE_DET, x = CODE)) +
   geom_bar(position = position_dodge(preserve = "single"), stat="count") +
   labs(title = "Blade Determination Profile", x = "", y = "Count", fill = "Attribute") +
   scale_fill_grey(start = 0.3, end = 0.9) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+  theme(text = element_text(family="IBM Plex Sans"),
+        axis.text.x = element_blank(),
         plot.title = element_text(hjust = 0.5, size = 18),
-        legend.position = "bottom")
+        legend.position = "top",
+        legend.title = element_blank())
 
-ggplot(blade_data_clean, aes(fill = BLADE_CURV, x = CODE)) +
+j <- ggplot(blade_data_clean, aes(fill = BLADE_CURV, x = CODE)) +
   geom_bar(position = position_dodge(preserve = "single"), stat="count") +
   labs(title = "Blade Curvature", x = "", y = "Count", fill = "Attribute") +
   scale_fill_grey(start = 0.3, end = 0.9) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+  theme(text = element_text(family="IBM Plex Sans"),
+        axis.text.x = element_blank(),
         plot.title = element_text(hjust = 0.5, size = 18),
-        legend.position = "bottom")
+        legend.position = "top",
+        legend.title = element_blank())
 
-ggplot(blade_data_clean, aes(fill = DORSAL_PATTERN, x = CODE)) +
+k <- ggplot(blade_data_clean, aes(fill = DORSAL_PATTERN, x = CODE)) +
   geom_bar(position = position_dodge(preserve = "single"), stat="count") +
   labs(title = "Dorsal Pattern Profile", x = "", y = "Count", fill = "Attribute") +
   scale_fill_grey(start = 0.3, end = 0.9) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+  theme(text = element_text(family="IBM Plex Sans"),
+        axis.text.x = element_blank(),
         plot.title = element_text(hjust = 0.5, size = 18),
-        legend.position = "bottom")
+        legend.position = "top",
+        legend.title = element_blank())
 
-ggplot(blade_data_clean, aes(fill = BULB_MORPH, x = CODE)) +
+l <- ggplot(blade_data_clean, aes(fill = BULB_MORPH, x = CODE)) +
   geom_bar(position = position_dodge(preserve = "single"), stat="count") +
   labs(title = "Bulb Morphology", x = "", y = "Count", fill = "Attribute") +
   scale_fill_grey(start = 0.3, end = 0.9) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+  theme(text = element_text(family="IBM Plex Sans"),
+        axis.text.x = element_blank(),
         plot.title = element_text(hjust = 0.5, size = 18),
-        legend.position = "bottom")
+        legend.position = "top",
+        legend.title = element_blank())
 
-ggplot(blade_data_clean, aes(fill = BUTT_PREP_1, x = CODE)) +
+m <- ggplot(blade_data_clean, aes(fill = BUTT_PREP_1, x = CODE)) +
   geom_bar(position = position_dodge(preserve = "single"), stat="count") +
   labs(title = "Butt Preparation Method #1", x = "", y = "Count", fill = "Attribute") +
   scale_fill_grey(start = 0.3, end = 0.9) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+  theme(text = element_text(family="IBM Plex Sans"),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         plot.title = element_text(hjust = 0.5, size = 18),
-        legend.position = "bottom")
+        legend.position = "top",
+        legend.title = element_blank())
 
-ggplot(blade_data_clean, aes(fill = BUTT_PREP_2, x = CODE)) +
+n <- ggplot(blade_data_clean, aes(fill = BUTT_PREP_2, x = CODE)) +
   geom_bar(position = position_dodge(preserve = "single"), stat="count") +
   labs(title = "Butt Preparation Method #2", x = "", y = "Count", fill = "Attribute") +
   scale_fill_grey(start = 0.3, end = 0.9) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+  theme(text = element_text(family="IBM Plex Sans"),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         plot.title = element_text(hjust = 0.5, size = 18),
-        legend.position = "bottom")
+        legend.position = "top",
+        legend.title = element_blank())
 
-ggplot(blade_data_clean, aes(fill = RAW_MAT, x = CLASSIFICATION)) +
+o <- ggplot(blade_data_clean, aes(fill = RAW_MAT, x = CLASSIFICATION)) +
   geom_bar(position = position_dodge(preserve = "single"), stat="count") +
   labs(title = "Raw Material", x = "", y = "Count", fill = "Type") +
   scale_fill_grey(start = 0.3, end = 0.9) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+  theme(text = element_text(family="IBM Plex Sans"),
+        axis.text.x = element_blank(),
         plot.title = element_text(hjust = 0.5, size = 18),
-        legend.position = "bottom")
+        legend.position = "top",
+        legend.title = element_blank())
 
-ggplot(blade_data_clean, aes(fill = DORS_BLADE_PROF, x = CLASSIFICATION)) +
+p <- ggplot(blade_data_clean, aes(fill = DORS_BLADE_PROF, x = CLASSIFICATION)) +
   geom_bar(position = position_dodge(preserve = "single"), stat="count") +
   labs(title = "Dorsal Blade Profile", x = "", y = "Count", fill = "Attribute") +
   scale_fill_grey(start = 0.3, end = 0.9) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+  theme(text = element_text(family="IBM Plex Sans"),
+        axis.text.x = element_blank(),
         plot.title = element_text(hjust = 0.5, size = 18),
-        legend.position = "bottom")
+        legend.position = "top",
+        legend.title = element_blank())
 
-ggplot(blade_data_clean, aes(fill = BLADE_DET, x = CLASSIFICATION)) +
+q <- ggplot(blade_data_clean, aes(fill = BLADE_DET, x = CLASSIFICATION)) +
   geom_bar(position = position_dodge(preserve = "single"), stat="count") +
   labs(title = "Blade Determination Profile", x = "", y = "Count", fill = "Attribute") +
   scale_fill_grey(start = 0.3, end = 0.9) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+  theme(text = element_text(family="IBM Plex Sans"),
+        axis.text.x = element_blank(),
         plot.title = element_text(hjust = 0.5, size = 18),
-        legend.position = "bottom")
+        legend.position = "top",
+        legend.title = element_blank())
 
-ggplot(blade_data_clean, aes(fill = BLADE_CURV, x = CLASSIFICATION)) +
+r <- ggplot(blade_data_clean, aes(fill = BLADE_CURV, x = CLASSIFICATION)) +
   geom_bar(position = position_dodge(preserve = "single"), stat="count") +
   labs(title = "Blade Curvature", x = "", y = "Count", fill = "Attribute") +
   scale_fill_grey(start = 0.3, end = 0.9) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+  theme(text = element_text(family="IBM Plex Sans"),
+        axis.text.x = element_blank(),
         plot.title = element_text(hjust = 0.5, size = 18),
-        legend.position = "bottom")
+        legend.position = "top",
+        legend.title = element_blank())
 
-ggplot(blade_data_clean, aes(fill = DORSAL_PATTERN, x = CLASSIFICATION)) +
+s <- ggplot(blade_data_clean, aes(fill = DORSAL_PATTERN, x = CLASSIFICATION)) +
   geom_bar(position = position_dodge(preserve = "single"), stat="count") +
   labs(title = "Dorsal Pattern Profile", x = "", y = "Count", fill = "Attribute") +
   scale_fill_grey(start = 0.3, end = 0.9) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+  theme(text = element_text(family="IBM Plex Sans"),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         plot.title = element_text(hjust = 0.5, size = 18),
-        legend.position = "bottom")
+        legend.position = "top",
+        legend.title = element_blank())
 
-ggplot(blade_data_clean, aes(fill = BULB_MORPH, x = CLASSIFICATION)) +
+t <- ggplot(blade_data_clean, aes(fill = BULB_MORPH, x = CLASSIFICATION)) +
   geom_bar(position = position_dodge(preserve = "single"), stat="count") +
   labs(title = "Bulb Morphology", x = "", y = "Count", fill = "Attribute") +
   scale_fill_grey(start = 0.3, end = 0.9) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+  theme(text = element_text(family="IBM Plex Sans"),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         plot.title = element_text(hjust = 0.5, size = 18),
-        legend.position = "bottom")
+        legend.position = "top",
+        legend.title = element_blank())
 
-ggplot(blade_data_clean, aes(fill = BUTT_PREP_1, x = CLASSIFICATION)) +
+u <- ggplot(blade_data_clean, aes(fill = BUTT_PREP_1, x = CLASSIFICATION)) +
   geom_bar(position = position_dodge(preserve = "single"), stat="count") +
   labs(title = "Butt Preparation Method #1", x = "", y = "Count", fill = "Attribute") +
   scale_fill_grey(start = 0.3, end = 0.9) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+  theme(text = element_text(family="IBM Plex Sans"),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         plot.title = element_text(hjust = 0.5, size = 18),
-        legend.position = "bottom")
+        legend.position = "top",
+        legend.title = element_blank())
 
-ggplot(blade_data_clean, aes(fill = BUTT_PREP_2, x = CLASSIFICATION)) +
+v <- ggplot(blade_data_clean, aes(fill = BUTT_PREP_2, x = CLASSIFICATION)) +
   geom_bar(position = position_dodge(preserve = "single"), stat="count") +
   labs(title = "Butt Preparation Method #2", x = "", y = "Count", fill = "Attribute") +
   scale_fill_grey(start = 0.3, end = 0.9) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+  theme(text = element_text(family="IBM Plex Sans"),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
         plot.title = element_text(hjust = 0.5, size = 18),
-        legend.position = "bottom")
+        legend.position = "top",
+        legend.title = element_blank())
 
+(o | p  | q  | r) / (s | t | u | v)
+
+
+ggsave("Figure_3.png", dpi = 400, plot = last_plot())
 ```
 
 ## Gini-Simpson and Morisita-Horn diversity indices
 
-```{r blade diversity 1, echo = FALSE, message = FALSE,  fig.width = 6, fig.height = 4, fig.align = "center"}
+```{r blade diversity 1 KEEP, echo = FALSE, message = FALSE,  fig.width = 6, fig.height = 4, fig.align = "center"}
 
 diversity_blade_prof <- diverse::diversity(table(blade_data_clean$CODE, blade_data_clean$DORS_BLADE_PROF), type = "gini-simpson", category_row = FALSE)
 diversity_blade_det  <- diverse::diversity(table(blade_data_clean$CODE, blade_data_clean$BLADE_DET), type = "gini-simpson", category_row = FALSE)
